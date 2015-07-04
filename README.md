@@ -23,7 +23,7 @@ Qui per una descrizione più dettagliata del funzionamento interno del chip:
 
 http://www.waitingforfriday.com/index.php/Commodore_SID_6581_Datasheet
 
-Hardware
+###Hardware###
 
 La board riproduce esattamente le "condizioni al contorno" per il SID chip come se si trovasse alloggiato in un Commodore 64 originale. L'application note originale mostra chiaramente i collegamenti da effettuare e i pochi componenti esterni richiesti (generatore di clock, condensatori e poco altro).
 
@@ -33,13 +33,13 @@ Unica differenza, le linee di indirizzo e dati vengono dirottate direttamente su
 
 NOTA IMPORTANTE!: Il RasberryPi ragiona in logica CMOS a 3.3V mentre il SID chip è TTL a 5V quindi completamente incompatibili a livello di tensioni. Fortunatamente, siccome andiamo unicamente a scrivere nei registri, il RasberryPi dovrà soltanto applicare 3.3v ai capi del chip, più che sufficienti per essere interpretati come livello logico alto dal SID.
 
-![Alt text](/img/board.png?raw=true "board")
+![Alt text](/img/board.jpg?raw=true "board")
 
 Lo schematico completo:
 
 ![Alt text](/img/sch.png?raw=true "SID chip")
 
-==Software==
+###Software###
 
 Il grosso del lavoro. Volevo una soluzione completamente stand-alone, senza l'ausilio di player esterni (come ACID64) e quindi ho realizzato un player che emula gran parte di un C64 originale. L'emulatore è necessario in quanto i file .sid sono programmi in linguaggio macchina 6502 e come tali devono essere eseguiti. Il player è scritto in C/C++ e basato sul mio emulatore MOS CPU 6502   più un semplice array di 65535 byte come memoria RAM (il C64 originale ha infatti 64K di RAM). Il player carica il codice programma contenuto nel file .sid nella RAM virtuale più un codice assembly aggiuntivo che ho chiamato micro-player: sostanzialmente si tratta di un programma minimale scritta in linguaggio macchina per CPU 6502 che assolve a due compiti specifici:
 
