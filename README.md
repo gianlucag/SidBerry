@@ -17,7 +17,7 @@ Fortunatamente il Raspberry ha ben 17 gpio e i 14 richiesti sono perfettamente p
 
 Ecco la configurazione dei registri interni del SID:
 
-
+![Alt text](/img/registers.png?raw=true "registers")
 
 Qui per una descrizione più dettagliata del funzionamento interno del chip:
 
