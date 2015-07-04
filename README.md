@@ -1,12 +1,13 @@
+##SidBerry##
+###C64 SID file player using a real SID 6581 chip###
+
 Un SID jukebox realizzato con RasberryPi e il SID chip originale 6581. Il chip è alloggiato in una board custom collegata direttamente ai gpio del Rasberry!
 
 [![ScreenShot](http://img.youtube.com/vi/i_vNFhmKoK4-ID/0.jpg)](http://youtu.be/i_vNFhmKoK4)
 
-
-
 La board può riprodurre qualsiasi SID file, basta caricare i file .sid nella sdcard del Rasberry, avviare il player e collegare all'uscita jack un paio di casse preamplificate o meglio uno stereo.
 
-SID chip
+###SID chip###
 
 Il SID originale, nelle varianti 6581 e 8580, è controllato caricando i suoi 29 registri interni con i valori opportuni al momento opportuno. La sequenza di byte inviati genera l'effetto o la musica desiderati. Ogni registro è 1 byte ed i registri sono in tutto 29 quindi c'è bisogno di almeno 5 gpio di indirizzo (2^5=32) e 8 gpio di dati per un totale di 13 gpio. Un altro gpio è richiesto per la linea CS del chip (Chip Select).
 
