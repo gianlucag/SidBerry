@@ -9,7 +9,7 @@ La board può riprodurre qualsiasi SID file, basta caricare i file .sid nella sd
 
 ###SID chip###
 
-![Alt text](/relative/path/to/sid.png?raw=true "SID chip")
+![Alt text](/img/sid.png?raw=true "SID chip")
 
 Il SID originale, nelle varianti 6581 e 8580, è controllato caricando i suoi 29 registri interni con i valori opportuni al momento opportuno. La sequenza di byte inviati genera l'effetto o la musica desiderati. Ogni registro è 1 byte ed i registri sono in tutto 29 quindi c'è bisogno di almeno 5 gpio di indirizzo (2^5=32) e 8 gpio di dati per un totale di 13 gpio. Un altro gpio è richiesto per la linea CS del chip (Chip Select).
 
@@ -29,7 +29,7 @@ Hardware
 
 La board riproduce esattamente le "condizioni al contorno" per il SID chip come se si trovasse alloggiato in un Commodore 64 originale. L'application note originale mostra chiaramente i collegamenti da effettuare e i pochi componenti esterni richiesti (generatore di clock, condensatori e poco altro).
 
-![Alt text](/relative/path/to/board.png?raw=true "board")
+![Alt text](/img/board.png?raw=true "board")
 
 Unica differenza, le linee di indirizzo e dati vengono dirottate direttamente sui gpio del RasberryPi.
 
@@ -37,7 +37,7 @@ NOTA IMPORTANTE!: Il RasberryPi ragiona in logica CMOS a 3.3V mentre il SID chip
 
 Lo schematico completo:
 
-![Alt text](/relative/path/to/sch.png?raw=true "SID chip")
+![Alt text](/img/sch.png?raw=true "SID chip")
 
 Software
 
@@ -52,7 +52,7 @@ Altre componenti sono il parser per i file .sid e la libreria WiringPi per pilot
 
 Questo il layout dell'intero applicativo, a destra è la memoria RAM virtuale 64K
 
-![Alt text](/relative/path/to/diagram.png?raw=true "layout")
+![Alt text](/img/diagram.png?raw=true "layout")
 
 Questo è il codice assembler del micro-player:
 
