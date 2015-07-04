@@ -1,5 +1,5 @@
 ##SidBerry##
-###Player per chip SID 6581 realizzato con RaspberryPi###
+###Music player per chip SID 6581 realizzato con RaspberryPi###
 
 Un SID jukebox realizzato con RasberryPi e il SID chip originale 6581. Il chip è alloggiato in una board custom collegata direttamente ai GPIO del Rasberry!
 
