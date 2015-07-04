@@ -1,5 +1,7 @@
 Un SID jukebox realizzato con RasberryPi e il SID chip originale 6581. Il chip è alloggiato in una board custom collegata direttamente ai gpio del Rasberry!
 
+[![ScreenShot](https://raw.github.com/GabLeRoux/WebMole/master/ressources/WebMole_Youtube_Video.png)](http://youtu.be/vNFhmKoK4)
+
 
 
 La board può riprodurre qualsiasi SID file, basta caricare i file .sid nella sdcard del Rasberry, avviare il player e collegare all'uscita jack un paio di casse preamplificate o meglio uno stereo.
