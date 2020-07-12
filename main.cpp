@@ -1,6 +1,6 @@
 //============================================================================
 // Description : SidBerry player & driver 
-// Author      : Gianluca Ghettini
+// Author      : Gianluca Ghettini, Alessio Lombardo
 //============================================================================
 
 #include <iostream>
@@ -8,8 +8,10 @@ using namespace std;
 #include <stdlib.h>
 #include "mos6502.h"
 #include "SidFile.h"
-#include <wiringPi.h>
 #include <sys/time.h>
+#include <unistd.h>
+
+#include "gpioInterface.h"
 
 uint8_t memory[65535]; // 64K ram
 static uint8_t kk = 0;
@@ -22,39 +24,39 @@ void TestWrite(uint16_t addr, uint8_t byte)
 		uint16_t phyaddr = addr;
 		
 		// set address to the bus
-		if(phyaddr & 0x01) digitalWrite(8, HIGH);
-		else digitalWrite(8, LOW);
-		if(phyaddr & 0x02) digitalWrite(9, HIGH);
-		else digitalWrite(9, LOW);
-		if(phyaddr & 0x04) digitalWrite(7, HIGH);
-		else digitalWrite(7, LOW);
-		if(phyaddr & 0x08) digitalWrite(0, HIGH);
-		else digitalWrite(0, LOW);
-		if(phyaddr & 0x10) digitalWrite(2, HIGH);
-		else digitalWrite(2, LOW);
+		if(phyaddr & 0x01) gpioWrite(A0, HIGH);
+		else gpioWrite(A0, LOW);
+		if(phyaddr & 0x02) gpioWrite(A1, HIGH);
+		else gpioWrite(A1, LOW);
+		if(phyaddr & 0x04) gpioWrite(A2, HIGH);
+		else gpioWrite(A2, LOW);
+		if(phyaddr & 0x08) gpioWrite(A3, HIGH);
+		else gpioWrite(A3, LOW);
+		if(phyaddr & 0x10) gpioWrite(A4, HIGH);
+		else gpioWrite(A4, LOW);
 		
 		// set data to the bus
-		if(byte & 0x01) digitalWrite(15, HIGH);
-		else digitalWrite(15, LOW);
-		if(byte & 0x02) digitalWrite(16, HIGH);
-		else digitalWrite(16, LOW);
-		if(byte & 0x04) digitalWrite(1, HIGH);
-		else digitalWrite(1, LOW);
-		if(byte & 0x08) digitalWrite(4, HIGH);
-		else digitalWrite(4, LOW);
-		if(byte & 0x10) digitalWrite(5, HIGH);
-		else digitalWrite(5, LOW);			
-		if(byte & 0x20) digitalWrite(6, HIGH);
-		else digitalWrite(6, LOW);
-		if(byte & 0x40) digitalWrite(10, HIGH);
-		else digitalWrite(10, LOW);
-		if(byte & 0x80) digitalWrite(11, HIGH);
-		else digitalWrite(11, LOW);		
+		if(byte & 0x01) gpioWrite(D0, HIGH);
+		else gpioWrite(D0, LOW);
+		if(byte & 0x02) gpioWrite(D1, HIGH);
+		else gpioWrite(D1, LOW);
+		if(byte & 0x04) gpioWrite(D2, HIGH);
+		else gpioWrite(D2, LOW);
+		if(byte & 0x08) gpioWrite(D3, HIGH);
+		else gpioWrite(D3, LOW);
+		if(byte & 0x10) gpioWrite(D4, HIGH);
+		else gpioWrite(D4, LOW);			
+		if(byte & 0x20) gpioWrite(D5, HIGH);
+		else gpioWrite(D5, LOW);
+		if(byte & 0x40) gpioWrite(D6, HIGH);
+		else gpioWrite(D6, LOW);
+		if(byte & 0x80) gpioWrite(D7, HIGH);
+		else gpioWrite(D7, LOW);		
 		
 		// assert cs line
-		digitalWrite(3, LOW);
-		usleep(10);		
-		digitalWrite(3, HIGH);	
+		gpioWrite(CS, LOW);
+		usleep(500000);		
+		gpioWrite(CS, HIGH);	
 
 	printf("\nOK\n");
 
@@ -87,39 +89,39 @@ void MemWrite(uint16_t addr, uint8_t byte)
 		uint16_t phyaddr = addr & 0x1f;
 		
 		// set address to the bus
-		if(phyaddr & 0x01) digitalWrite(8, HIGH);
-		else digitalWrite(8, LOW);
-		if(phyaddr & 0x02) digitalWrite(9, HIGH);
-		else digitalWrite(9, LOW);
-		if(phyaddr & 0x04) digitalWrite(7, HIGH);
-		else digitalWrite(7, LOW);
-		if(phyaddr & 0x08) digitalWrite(0, HIGH);
-		else digitalWrite(0, LOW);
-		if(phyaddr & 0x10) digitalWrite(2, HIGH);
-		else digitalWrite(2, LOW);
+		if(phyaddr & 0x01) gpioWrite(A0, HIGH);
+		else gpioWrite(A0, LOW);
+		if(phyaddr & 0x02) gpioWrite(A1, HIGH);
+		else gpioWrite(A1, LOW);
+		if(phyaddr & 0x04) gpioWrite(A2, HIGH);
+		else gpioWrite(A2, LOW);
+		if(phyaddr & 0x08) gpioWrite(A3, HIGH);
+		else gpioWrite(A3, LOW);
+		if(phyaddr & 0x10) gpioWrite(A4, HIGH);
+		else gpioWrite(A4, LOW);
 		
 		// set data to the bus
-		if(byte & 0x01) digitalWrite(15, HIGH);
-		else digitalWrite(15, LOW);
-		if(byte & 0x02) digitalWrite(16, HIGH);
-		else digitalWrite(16, LOW);
-		if(byte & 0x04) digitalWrite(1, HIGH);
-		else digitalWrite(1, LOW);
-		if(byte & 0x08) digitalWrite(4, HIGH);
-		else digitalWrite(4, LOW);
-		if(byte & 0x10) digitalWrite(5, HIGH);
-		else digitalWrite(5, LOW);			
-		if(byte & 0x20) digitalWrite(6, HIGH);
-		else digitalWrite(6, LOW);
-		if(byte & 0x40) digitalWrite(10, HIGH);
-		else digitalWrite(10, LOW);
-		if(byte & 0x80) digitalWrite(11, HIGH);
-		else digitalWrite(11, LOW);		
+		if(byte & 0x01) gpioWrite(D0, HIGH);
+		else gpioWrite(D0, LOW);
+		if(byte & 0x02) gpioWrite(D1, HIGH);
+		else gpioWrite(D1, LOW);
+		if(byte & 0x04) gpioWrite(D2, HIGH);
+		else gpioWrite(D2, LOW);
+		if(byte & 0x08) gpioWrite(D3, HIGH);
+		else gpioWrite(D3, LOW);
+		if(byte & 0x10) gpioWrite(D4, HIGH);
+		else gpioWrite(D4, LOW);			
+		if(byte & 0x20) gpioWrite(D5, HIGH);
+		else gpioWrite(D5, LOW);
+		if(byte & 0x40) gpioWrite(D6, HIGH);
+		else gpioWrite(D6, LOW);
+		if(byte & 0x80) gpioWrite(D7, HIGH);
+		else gpioWrite(D7, LOW);		
 		
 		// assert CS line (strobe)
-		digitalWrite(3, LOW);
+		gpioWrite(CS, LOW);
 		usleep(1);		
-		digitalWrite(3, HIGH);	
+		gpioWrite(CS, HIGH);	
 	}
 	else
 	{
@@ -136,8 +138,8 @@ uint8_t MemRead(uint16_t addr)
 		// access to SID chip
 		if((addr & 0x00FF) == 0x001B)
 		{
-			// emulate read access to OSC3/Random register, returna a random value
-			printf("\mread! 1b");
+			// emulate read access to OSC3/Random register, return a random value
+			printf("\nread! 1b");
 			return rand();
 		}
 		if((addr & 0x00FF) == 0x001C)
@@ -244,44 +246,46 @@ int main(int argc, char *argv[])
 	memory[0x001A] = 0x40; // RTI: return from interrupt
 	
 	// setup wiringPi, configure GPIOs
-	wiringPiSetup();
+	gpioSetup();
 	
-	pinMode(15, OUTPUT); // b0
-	pinMode(16, OUTPUT); // b1
-	pinMode(1, OUTPUT); // b2
-	pinMode(4, OUTPUT); // b3
-	pinMode(5, OUTPUT); // b4
-	pinMode(6, OUTPUT); // b5
-	pinMode(10, OUTPUT); //b6
-	pinMode(11, OUTPUT); //b7
+	gpioMode(D0, OUTPUT);
+	gpioMode(D1, OUTPUT);
+	gpioMode(D2, OUTPUT);
+	gpioMode(D3, OUTPUT);
+	gpioMode(D4, OUTPUT);
+	gpioMode(D5, OUTPUT);
+	gpioMode(D6, OUTPUT);
+	gpioMode(D7, OUTPUT);
 	
-	pinMode(8, OUTPUT); // a0
-	pinMode(9, OUTPUT); // a1
-	pinMode(7, OUTPUT); // a2
-	pinMode(0, OUTPUT); // a3
-	pinMode(2, OUTPUT); // a4
+	gpioMode(A0, OUTPUT);
+	gpioMode(A1, OUTPUT);
+	gpioMode(A2, OUTPUT);
+	gpioMode(A3, OUTPUT);
+	gpioMode(A4, OUTPUT);
 	
-	pinMode(3, OUTPUT); // cs
+	gpioMode(CS, OUTPUT);
 	
-	digitalWrite(15, LOW);
-	digitalWrite(16, LOW);
-	digitalWrite(1, LOW);
-	digitalWrite(4, LOW);
-	digitalWrite(5, LOW);
-	digitalWrite(6, LOW);
-	digitalWrite(10, LOW);
-	digitalWrite(11, LOW);
+	gpioWrite(D0, LOW);
+	gpioWrite(D1, LOW);
+	gpioWrite(D2, LOW);
+	gpioWrite(D3, LOW);
+	gpioWrite(D4, LOW);
+	gpioWrite(D5, LOW);
+	gpioWrite(D6, LOW);
+	gpioWrite(D7, LOW);
 	
-	digitalWrite(8, LOW);
-	digitalWrite(9, LOW);			
-	digitalWrite(7, LOW);
-	digitalWrite(0, LOW);
-	digitalWrite(2, LOW);
-	
-	digitalWrite(3, HIGH);
+	gpioWrite(A0, LOW);
+	gpioWrite(A1, LOW);	
+	gpioWrite(A2, LOW);
+	gpioWrite(A3, LOW);
+	gpioWrite(A4, LOW);
+
+	gpioWrite(CS, HIGH);
+
+	//TestLoop();
 
     srand(0);
-    
+	
 	mos6502 cpu(MemRead, MemWrite);
 	
 	cpu.Reset();
