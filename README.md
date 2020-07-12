@@ -1,5 +1,5 @@
-##SidBerry##
-###Music player per chip SID 6581 realizzato con RaspberryPi###
+## SidBerry ##
+### Music player per chip SID 6581 realizzato con RaspberryPi ###
 
 Un SID jukebox realizzato con RasberryPi e il SID chip originale 6581. Il chip è alloggiato in una board custom collegata direttamente ai GPIO del Rasberry!
 
@@ -7,7 +7,7 @@ Un SID jukebox realizzato con RasberryPi e il SID chip originale 6581. Il chip �
 
 La board può riprodurre qualsiasi SID file, basta caricare i file .sid nella sdcard del Rasberry, avviare il player e collegare all'uscita jack un paio di casse preamplificate o meglio uno stereo.
 
-###SID chip###
+### SID chip ###
 
 Il SID originale, nelle varianti 6581 e 8580, è controllato caricando i suoi 29 registri interni con i valori opportuni al momento opportuno. La sequenza di byte inviati genera l'effetto o la musica desiderati. Ogni registro è 1 byte ed i registri sono in tutto 29 quindi c'è bisogno di almeno 5 gpio di indirizzo (2^5=32) e 8 gpio di dati per un totale di 13 gpio. Un altro gpio è richiesto per la linea CS del chip (Chip Select).
 
@@ -23,7 +23,7 @@ Qui per una descrizione più dettagliata del funzionamento interno del chip:
 
 http://www.waitingforfriday.com/index.php/Commodore_SID_6581_Datasheet
 
-###Hardware###
+### Hardware ###
 
 La board riproduce esattamente le "condizioni al contorno" per il SID chip come se si trovasse alloggiato in un Commodore 64 originale. L'application note originale mostra chiaramente i collegamenti da effettuare e i pochi componenti esterni richiesti (generatore di clock, condensatori e poco altro).
 
@@ -39,7 +39,7 @@ Lo schematico completo:
 
 ![Alt text](/img/sch.png?raw=true "SID chip")
 
-###Software###
+### Software ###
 
 Il grosso del lavoro. Volevo una soluzione completamente stand-alone, senza l'ausilio di player esterni (come ACID64) e quindi ho realizzato un player che emula gran parte di un C64 originale. L'emulatore è necessario in quanto i file .sid sono programmi in linguaggio macchina 6502 e come tali devono essere eseguiti. Il player è scritto in C/C++ e basato sul mio emulatore MOS CPU 6502   più un semplice array di 65535 byte come memoria RAM (il C64 originale ha infatti 64K di RAM). Il player carica il codice programma contenuto nel file .sid nella RAM virtuale più un codice assembly aggiuntivo che ho chiamato micro-player: sostanzialmente si tratta di un programma minimale scritta in linguaggio macchina per CPU 6502 che assolve a due compiti specifici:
 
@@ -88,5 +88,15 @@ memory[0x0018] = (play &gt;&gt; 8) &amp; 0xFF;
 memory[0x0019] = 0xEA; // nop
 memory[0x001A] = 0x40; // return from interrupt
 ```
+### Modifiche al Software introdotte da Alessio Lombardo ###
+- Bug-Fixing (si ringrazia Thoroide, https://www.gianlucaghettini.net/sidberry2-raspberry-pi-6581-sid-player/)
+- Possibilità di compilare il sorgente per diverse schede/SoC. Oltre a RaspberryPI, è direttamente supportata la scheda Acme Systems AriettaG25. Altre schede possono essere aggiunte editando opportunamente i file "gpioInterface.cpp" e "gpioInterface.h". Se necessario, è possibile fare riferimento a librerie esterne per la gestione delle porte GPIO (ad esempio, "wiringPi" nel caso di Rapsberry o "wiringSam" nel caso di Arietta).
 
-
+Per la scheda AriettaG25 con libreria "wiringSAM" già installata compilare con:
+```
+g++ *.cpp -D BOARD='ARIETTAG25' -o sidberry -lwiringSam
+```
+Per la scheda RaspberryPI con libreria "wiringPi" già installata  compilare con:
+```
+g++ *.cpp -D BOARD='RASPBERRYPI' -o sidberry -lwiringPi
+```
