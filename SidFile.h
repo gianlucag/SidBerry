@@ -71,6 +71,7 @@ public:
 	string GetCopyrightInfo();
 	int GetSongSpeed(int songNum);
 	int GetNumOfSongs();
+	int GetFirstSong();
 	uint8_t *GetDataPtr();
 	uint16_t GetDataLength();
 	uint16_t GetLoadAddress();

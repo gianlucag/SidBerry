@@ -119,6 +119,11 @@ int SidFile::GetNumOfSongs()
 	return numOfSongs;
 }
 
+int SidFile::GetFirstSong()
+{
+	return firstSong;
+}
+
 uint8_t *SidFile::GetDataPtr()
 {
 	return dataBuffer;
@@ -143,5 +148,4 @@ uint16_t SidFile::GetPlayAddress()
 {
 	return playAddr;
 }
-
 
