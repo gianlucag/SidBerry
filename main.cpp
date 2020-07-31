@@ -296,49 +296,57 @@ int getch_noecho_special_char() {
 	
 }
 
-void change_player_status(mos6502 cpu, SidFile sid, int key_press, bool* paused, bool* exit, uint8_t* mode_vol_reg, int* song_number){
+void change_player_status(mos6502 cpu, SidFile sid, int key_press, bool* paused, bool* exit, uint8_t* mode_vol_reg, int* song_number, int* sec, int* min){
 	if(key_press==256 || key_press==(int)'q'){ //Escape (reset all registers and quit)
-		cout << "Exit" << endl;
+		printf("Exit\n");
 		for(int i=0xD400;i<0xD414;i++){
 			MemWrite(i, 0);
 		}
 		*paused=false;
 		*exit=true;
-
 	}else if(key_press==32){ //Pause
 		if(*paused){
-			cout << "\rPlay Song " << (*song_number)+1 << " / " << sid.GetNumOfSongs() << flush;
+			printf("\rPlay Sub-Song %d / %d [%02d:%02d]",(*song_number)+1,sid.GetNumOfSongs(),*min,*sec); fflush(stdout);
 			MemWrite(0xD418, *mode_vol_reg);		
 			*paused=false;		
 		}else{
-			cout << "\rPlay Song " << (*song_number)+1 << " / " << sid.GetNumOfSongs() << " [PAUSE]"<< flush;		
+			printf("\rPlay Sub-Song %d / %d [%02d:%02d][PAUSE]",(*song_number)+1,sid.GetNumOfSongs(),*min,*sec); fflush(stdout);	
 			*mode_vol_reg = MemRead(0xD418);		
 			MemWrite(0xD418, 0);		
 			*paused=true;	
 		}
-
-	}else if(key_press==(int)'\n'){
-		cout << "\rPlay Song " << (*song_number)+1 << " / " << sid.GetNumOfSongs() << flush;
 	}else if(key_press==(int)'v'){
 		verbose = !verbose;
 		if(verbose) cout << "VERBOSE" << endl;
 		else cout << "NO VERBOSE" << endl;
 	}else if(key_press==(int)'r'){
-		cout << "\rPlay Song " << (*song_number)+1 << " / " << sid.GetNumOfSongs() << flush;
 		load_sid(cpu,sid,*song_number);
+		*min=0;
+		*sec=0;
 		*paused=false;
-	}else if(key_press==257){
+		printf("\rPlay Sub-Song %d / %d [%02d:%02d]",(*song_number)+1,sid.GetNumOfSongs(),*min,*sec); fflush(stdout);
+	}else if(key_press==257){ //Previous Sub-Song
 		(*song_number)--;
 		if(*song_number<0) *song_number=sid.GetNumOfSongs()-1;
-		cout << "\rPlay Song " << (*song_number)+1 << " / " << sid.GetNumOfSongs() << flush;
 		load_sid(cpu,sid,*song_number);	
+		*min=0;
+		*sec=0;
 		*paused=false;
-	}else if(key_press==258){
+		printf("\rPlay Sub-Song %d / %d [%02d:%02d]",(*song_number)+1,sid.GetNumOfSongs(),*min,*sec); fflush(stdout);
+	}else if(key_press==258){ //Next Sub-Song
 		(*song_number)++;
 		if(*song_number==sid.GetNumOfSongs()) (*song_number)=0;
-		cout << "\rPlay Song " << (*song_number)+1 << " / " << sid.GetNumOfSongs() << flush;
 		load_sid(cpu,sid,*song_number);
+		*min=0;
+		*sec=0;
 		*paused=false;		
+		printf("\rPlay Sub-Song %d / %d [%02d:%02d]",(*song_number)+1,sid.GetNumOfSongs(),*min,*sec); fflush(stdout);
+	}else if(key_press>0){
+		if(*paused){
+			printf("\rPlay Sub-Song %d / %d [%02d:%02d][PAUSE]",(*song_number)+1,sid.GetNumOfSongs(),*min,*sec); fflush(stdout);
+		}else{
+			printf("\rPlay Sub-Song %d / %d [%02d:%02d]",(*song_number)+1,sid.GetNumOfSongs(),*min,*sec); fflush(stdout);		
+		}
 	}
 	
 }
@@ -371,8 +379,8 @@ int main(int argc, char *argv[])
 		}else if(!strcmp(argv[param_count],"-h") || !strcmp(argv[param_count],"--help")){
 			cout << "Usage: " << argv[0] << " <Sid Filename> [Options]" << endl;
 			cout << "Options: " << endl;
-			cout << " -s, --song    : Set song number (default depends on the Sid File) " << endl;			
-			cout << " -v, --verbose : Verbose mode (show memory content) " << endl;
+			cout << " -s, --song    : Set Sub-Song number (default depends on the Sid File) " << endl;			
+			cout << " -v, --verbose : Verbose mode (show SID registers content) " << endl;
 			cout << " -V, --version : Show version and other informations " << endl;
 			cout << " -h, --help    : Show this help message " << endl;
 			return 0;
@@ -384,7 +392,7 @@ int main(int argc, char *argv[])
 	
 	int res = sid.Parse(filename);
 	if(song_number<0 or song_number>=sid.GetNumOfSongs()){
-		cout << "Warning: Invalid Song Number. Default song will be chosen." << endl;
+		cout << "Warning: Invalid Sub-Song Number. Default Sub-Song will be chosen." << endl;
 		song_number=sid.GetFirstSong();	
 	}
 	
@@ -399,22 +407,23 @@ int main(int argc, char *argv[])
 		cerr << "error loading sid file! malformed" << endl;
 		return 2;
 	}
+	cout << "\n< Sid Info >" << endl;	
+	cout << "Module Name       : " << sid.GetModuleName() << endl ;
+	cout << "Author Name       : " << sid.GetAuthorName() << endl ;
+	cout << "Copyright         : " << sid.GetCopyrightInfo() << endl ;
 	
-	cout << "Module Name   : " << sid.GetModuleName() << endl ;
-	cout << "Author Name   : " << sid.GetAuthorName() << endl ;
-	cout << "Copyright     : " << sid.GetCopyrightInfo() << endl ;
-	
-	cout << "Load Address  : " << sid.GetLoadAddress() << endl ;
-	cout << "Init Address  : " << sid.GetInitAddress() << endl ;
-	cout << "Play Address  : " << sid.GetPlayAddress() << endl ;
+	cout << "Load Address      : " << sid.GetLoadAddress() << endl ;
+	cout << "Init Address      : " << sid.GetInitAddress() << endl ;
+	cout << "Play Address      : " << sid.GetPlayAddress() << endl ;
 
-	cout << "Selected Song : " << song_number+1 << " / " << sid.GetNumOfSongs() << endl ;
+	cout << "Selected Sub-Song : " << song_number+1 << " / " << sid.GetNumOfSongs() << endl ;
 
     srand(0);
 	mos6502 cpu(MemRead, MemWrite);
 	
-	int ts = 0;
+	int time_unit = 0;
 	int sec = 0;
+	int min = 0;
 
 	timeval t1,t2;
 	long int elaps;
@@ -423,15 +432,15 @@ int main(int argc, char *argv[])
 	
 	if(verbose) cout << endl;
 	
-	cout << "\nCommands: " << endl;
+	cout << "\n< Player Commands >" << endl;
 	cout << "Space       : Pause/Continue " << endl;
-	cout << "Left  Arrow : Previous Song " << endl;
-	cout << "Right Arrow : Next Song " << endl;	
-	cout << "R           : Restart current Song " << endl;	
+	cout << "Left  Arrow : Previous Sub-Song " << endl;
+	cout << "Right Arrow : Next Sub-Song " << endl;	
+	cout << "R           : Restart current Sub-Song " << endl;	
 	cout << "V           : Verbose (show SID registers) " << endl;	
-	cout << "Q or Escape : Quit " << endl;	
+	cout << "Q or Escape : Quit " << endl << endl;
 	
-	cout << "\rPlay Song " << song_number+1 << " / " << sid.GetNumOfSongs() << flush;
+	printf("\rPlay Sub-Song %d / %d [%02d:%02d]",song_number+1,sid.GetNumOfSongs(),min,sec); fflush(stdout);
 	
 	bool paused = false;
 	bool exit = false;
@@ -443,13 +452,13 @@ int main(int argc, char *argv[])
 	{
 		
 		while(paused){	
-			change_player_status(cpu, sid, getch_noecho_special_char(),&paused,&exit,&mode_vol_reg,&song_number);
+			change_player_status(cpu, sid, getch_noecho_special_char(),&paused,&exit,&mode_vol_reg,&song_number, &sec, &min);
 			usleep(100000);
 		}
 		
 		gettimeofday(&t1, NULL);	
 
-		change_player_status(cpu, sid, getch_noecho_special_char(),&paused,&exit,&mode_vol_reg,&song_number);
+		change_player_status(cpu, sid, getch_noecho_special_char(),&paused,&exit,&mode_vol_reg,&song_number, &sec, &min);
 		
 		if(exit) break;
 		if(paused) continue;
@@ -467,7 +476,17 @@ int main(int argc, char *argv[])
 		if(t1.tv_sec == t2.tv_sec) elaps = t2.tv_usec - t1.tv_usec;
 		else elaps = 1000000 - t1.tv_usec + t2.tv_usec;
 		if(elaps < 20000) usleep(20000 - elaps); // 50Hz refresh rate
-		ts++;
+		time_unit++;		
+		if(time_unit%50==0){
+			sec++;
+			if(sec==60){
+				sec=0;
+				min++;
+			}
+			if(!verbose){
+				printf("\rPlay Sub-Song %d / %d [%02d:%02d]",song_number+1,sid.GetNumOfSongs(),min,sec); fflush(stdout);
+			}
+		}
 	}
 	
 	return 0;
