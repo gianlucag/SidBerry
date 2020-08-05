@@ -91,12 +91,17 @@ memory[0x001A] = 0x40; // return from interrupt
 ### Modifiche al Software introdotte da Alessio Lombardo ###
 - Bug-Fixing (si ringrazia Thoroide, https://www.gianlucaghettini.net/sidberry2-raspberry-pi-6581-sid-player/)
 - Possibilità di compilare il sorgente per diverse schede/SoC. Oltre a RaspberryPI, è direttamente supportata la scheda Acme Systems AriettaG25. Altre schede possono essere aggiunte editando opportunamente i file "gpioInterface.cpp" e "gpioInterface.h". Se necessario, è possibile fare riferimento a librerie esterne per la gestione delle porte GPIO (ad esempio, "wiringPi" nel caso di Rapsberry o "wiringSam" nel caso di Arietta).
+- Aggiunti controlli al player: Pausa/Continua, traccia precedente/successiva, Restart, Uscita (con reset dei registri), Modalità Verbose.
 
 Per la scheda AriettaG25 con libreria "wiringSAM" già installata compilare con:
 ```
 g++ *.cpp -D BOARD='ARIETTAG25' -o sidberry -lwiringSam
 ```
-Per la scheda RaspberryPI con libreria "wiringPi" già installata  compilare con:
+Per la scheda RaspberryPI con libreria "wiringPi" già installata compilare con:
 ```
 g++ *.cpp -D BOARD='RASPBERRYPI' -o sidberry -lwiringPi
+```
+Per altre schede, dopo aver opportunamente modificato "gpioInterface.cpp" e "gpioInterface.h", compilare con:
+```
+g++ *.cpp -D BOARD='CUSTOM' -o sidberry
 ```
